@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import { Component } from 'react';
 
@@ -6,85 +5,56 @@ class App extends Component{
   constructor(props){
     super(props);
     this.state = {
-      posts: [
-        {
-          id: 1,
-          title: 'Titulo 1',
-          body: 'Corpo 1'
-        },
-        {
-          id: 2,
-          title: 'Titulo 2',
-          body: 'Corpo 2'
-        },
-        {
-          id: 3,
-          title: 'Titulo 3',
-          body: 'Corpo 3'
-        }
-      ],
-      counter: 0
+      posts: [],
+      photos: []
     };
-    this.timeoutUpdate = null;
   }
 
   componentDidMount(){ // É um método usado principalmente na realização de operações assíncronas, como requisição de dados de uma API.
-    this.handleTimeout();
+    this.loadPosts();
+    this.loadPhotos();
   };
 
-  componentDidUpdate(prevProps, prevState){
-    this.handleTimeout();
+  loadPosts = async() => {
+    const posts = await fetch("https://jsonplaceholder.typicode.com/posts");
+    this.setState({posts: await posts.json()});
   }
 
-  componentWillUnmount(){
-    clearTimeout(this.timeoutUpdate);
+  loadPhotos = async() => {
+    const photosResponse = await fetch("https://jsonplaceholder.typicode.com/photos");
+    const photosJson = await photosResponse.json();
+
+    this.setState({photos: photosJson});
   }
-
-  handleTimeout = () => {
-    const { posts, counter } = this.state;
-      posts[0].title = "Novo Título";
-
-      this.timeoutUpdate = setTimeout(() => {
-        this.setState({ posts, counter: counter + 1 });
-      }, 1000);
-  };
 
   render(){
-    const { posts, counter } = this.state;
+    const { posts, photos } = this.state;
 
-    const listItems = posts.map((value) => {
+    const listPhotos = photos.map((photo) => {
       return(
-        <ul key={value.id}>
-          <li>{value.title}</li>
-          <li>{value.body}</li>
-        </ul>
+        <img key={photo.id} src={photo.url} alt={photo.title}></img>
+      );
+    });
+
+    const listItems = posts.map((post, index) => {
+      return(
+          <div key={post.id} className='post'>
+            <div className='post-content'>
+              {listPhotos[index]}
+              <h1>{post.title}</h1>
+              <p>{post.body}</p>
+            </div>
+          </div>
       );
     });
 
     return( // O que está dentro do return é jsx, caso você queira usar alguma lógica do js, é necessário usar as {}
-      <div className="App">
-          <header className="App-header">
-            <h1>{ counter }</h1>
-            <img src={logo} className="App-logo" alt="logo" />
-            
-            <ul>{listItems}</ul>
-
-            <button onClick={this.handlePClick}>{}</button>
-            <a
-              className="App-link"
-              href="https://reactjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn React
-            </a>
-          </header>
+      <section className='container'>
+        <div className="posts">
+          {listItems}
         </div>
+      </section>
     );
-  }
-
-  handlePClick = () => {
-    this.setState({count: this.state.count + 1});
   }
 }
 
