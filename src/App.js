@@ -1,6 +1,6 @@
 import './App.css';
 import { Component } from 'react';
-import { PostCard } from './components/PostCard';
+import { PostsDiv } from './components/PostsDiv';
 import { loadPosts } from './utils/load-posts';
 
 class App extends Component{
@@ -22,17 +22,7 @@ class App extends Component{
 
     return( // O que está dentro do return é jsx, caso você queira usar alguma lógica do js, é necessário usar as {}
       <section className='container'>
-        <div className="posts">
-          {
-            posts.map((post) => {
-              return(
-                  <PostCard
-                    key={post.id}
-                    post={post}
-                  />
-              );
-          })}
-        </div>
+        <PostsDiv posts={posts}/>
       </section>
     );
   }
