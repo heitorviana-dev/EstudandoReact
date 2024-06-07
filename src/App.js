@@ -1,5 +1,6 @@
 import './App.css';
 import { Component } from 'react';
+import { PostCard } from './components/PostCard';
 
 class App extends Component{
   constructor(props){
@@ -11,7 +12,7 @@ class App extends Component{
   }
 
   componentDidMount(){ // É um método usado principalmente na realização de operações assíncronas, como requisição de dados de uma API.
-    this.loadPosts();
+    this.loadPosts(); 
     this.loadPhotos();
   };
 
@@ -38,13 +39,12 @@ class App extends Component{
 
     const listItems = posts.map((post, index) => {
       return(
-          <div key={post.id} className='post'>
-            <div className='post-content'>
-              {listPhotos[index]}
-              <h1>{post.title}</h1>
-              <p>{post.body}</p>
-            </div>
-          </div>
+          <PostCard
+            key={post.id}
+            post={post}
+            index={index}
+            listPhotos={listPhotos}
+          />
       );
     });
 
