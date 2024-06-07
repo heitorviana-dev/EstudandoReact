@@ -1,57 +1,37 @@
 import './App.css';
 import { Component } from 'react';
 import { PostCard } from './components/PostCard';
+import { loadPosts } from './utils/load-posts';
 
 class App extends Component{
   constructor(props){
     super(props);
     this.state = {
       posts: [],
-      photos: []
     };
   }
 
-  componentDidMount(){ // É um método usado principalmente na realização de operações assíncronas, como requisição de dados de uma API.
-    this.loadPosts(); 
-    this.loadPhotos();
+  async componentDidMount(){ // É um método usado principalmente na realização de operações assíncronas, como requisição de dados de uma API.
+    const postsAndPhotos = await loadPosts();
+    this.setState({posts: postsAndPhotos});
   };
 
-  loadPosts = async() => {
-    const posts = await fetch("https://jsonplaceholder.typicode.com/posts");
-    this.setState({posts: await posts.json()});
-  }
-
-  loadPhotos = async() => {
-    const photosResponse = await fetch("https://jsonplaceholder.typicode.com/photos");
-    const photosJson = await photosResponse.json();
-
-    this.setState({photos: photosJson});
-  }
 
   render(){
-    const { posts, photos } = this.state;
-
-    const listPhotos = photos.map((photo) => {
-      return(
-        <img key={photo.id} src={photo.url} alt={photo.title}></img>
-      );
-    });
-
-    const listItems = posts.map((post, index) => {
-      return(
-          <PostCard
-            key={post.id}
-            post={post}
-            index={index}
-            listPhotos={listPhotos}
-          />
-      );
-    });
+    const { posts } = this.state;
 
     return( // O que está dentro do return é jsx, caso você queira usar alguma lógica do js, é necessário usar as {}
       <section className='container'>
         <div className="posts">
-          {listItems}
+          {
+            posts.map((post) => {
+              return(
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                  />
+              );
+          })}
         </div>
       </section>
     );

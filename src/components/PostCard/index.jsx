@@ -1,10 +1,10 @@
 export const PostCard = (props) => {
-    const { post, index, listPhotos } = props;
+    const { post } = props;
 
     return (
         <div className='post'>
             <div className='post-content'>
-              {listPhotos[index]}
+              <img src={post.cover} alt={post.title} />
               <h1>{post.title}</h1>
               <p>{post.body}</p>
             </div>
