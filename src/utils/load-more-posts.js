@@ -1,9 +1,9 @@
-export const loadMorePosts = (state) => {
-    const {posts, allPosts, page, postsPerPage} = state;
+export const loadMorePosts = (posts, allPosts, page, postsPerPage) => {
+    // const {posts, allPosts, page, postsPerPage} = state;
     const nextPage = page + postsPerPage;
     const nextPosts = allPosts.slice(nextPage, nextPage + postsPerPage);
-    
-    posts.push(...nextPosts);
+    const morePosts = posts;
+    morePosts.push(...nextPosts);
 
-    return {posts, nextPage};
+    return {morePosts, nextPage};
 }

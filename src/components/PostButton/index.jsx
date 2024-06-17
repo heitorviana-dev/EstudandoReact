@@ -1,8 +1,8 @@
 import './styles.css';
 
 export const PostButton = (props) => {
-    const { loadMorePosts, disabled } = props;
+    const { loadMorePosts } = props;
     return (
-        <button disabled={disabled} className="button" onClick={loadMorePosts}>LoadMorePosts</button>
+        <button className="button" onClick={loadMorePosts}>LoadMorePosts</button>
     )
 }

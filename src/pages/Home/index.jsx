@@ -1,75 +1,72 @@
+import { useState, useEffect } from 'react';
+
 import './styles.css';
-import { Component } from 'react';
+
 import { PostsDiv } from '../../components/PostsDiv';
 import { loadPosts } from '../../utils/load-posts';
 import { PostButton } from '../../components/PostButton';
 import { TextInput } from '../../components/TextInput';
 import { loadMorePosts } from '../../utils/load-more-posts';
 
-class Home extends Component{
-  constructor(props){
-    super(props);
-    this.state = {
-      posts: [],
-      allPosts: [],
-      page: 0,
-      postsPerPage: 2,
-      searchValue: ""
-    };
-  }
+export const Home = () => {
+  const [ posts, setPosts ] = useState([]);
+  const [ allPosts, setAllPosts ] = useState([]);
+  const [ page, setPage ] = useState(0);
+  const [ postsPerPage ] = useState(2);
+  const [ searchValue, setSearchValue ] = useState('');
 
-  async componentDidMount(){ // É um método usado principalmente na realização de operações assíncronas, como requisição de dados de uma API.
-    const { page, postsPerPage } = this.state;
-    const postsAndPhotos = await loadPosts();
-    this.setState({
-      posts: postsAndPhotos.slice(page, postsPerPage),
-      allPosts: postsAndPhotos,
-    });
-  };
+  const handleChange = (e) => {
+    setSearchValue(e.target.value)
+    console.log(searchValue)
 
-  loadMorePosts = () => {
-    const {posts, nextPage} = loadMorePosts(this.state);
-    this.setState({posts, page: nextPage});
-  }
-
-  handleChange = (e) => {
-    this.setState({searchValue: e.target.value});
-
-    const { allPosts, postsPerPage, page } = this.state;
     const nextPosts = allPosts.slice(0, page + postsPerPage); //Certo
     if(!e.target.value){
-      this.setState({ posts: nextPosts });
+      setPosts(nextPosts);
     }
     else{
       const filterPosts = nextPosts.filter(post => post.title.includes(e.target.value.toLowerCase())); //Certo
-      this.setState({ posts: filterPosts });
+      setPosts(filterPosts);
     }
   }
 
-  render(){
-    const { posts, page, postsPerPage, allPosts, searchValue } = this.state;
-    const noMorePosts = page + postsPerPage >= allPosts.length;
+  const handleLoadMorePosts = () => {
+    const {morePosts, nextPage} = loadMorePosts(posts, allPosts, page, postsPerPage);
+    setPosts(morePosts);
+    setPage(nextPage);
+  }
 
-    return( // O que está dentro do return é jsx, caso você queira usar alguma lógica do js, é necessário usar as {}
-      <section className='container'>
-        <div className='search-container'>
-          <h1>Search Value:</h1>
-          <TextInput type="search" value={searchValue} onChange={this.handleChange}/>
+  useEffect(() => {
+    const fetchData = async() => {
+      const postsAndPhotos = await loadPosts();
+      setPosts(postsAndPhotos.slice(0, postsPerPage));
+      setAllPosts(postsAndPhotos);
+    };
+
+    fetchData();
+  }, [postsPerPage]);
+
+  return( // O que está dentro do return é jsx, caso você queira usar alguma lógica do js, é necessário usar as {}
+    <section className='container'>
+      <div className='search-container'>
+        <h1>Search Value:</h1>
+        <TextInput type="search" value={searchValue} onChange={handleChange}/>
+      </div>
+
+      {/* {posts.length > 0 ? (
+      <>
+        <PostsDiv posts={posts}/>
+        <div className="button-container">
+          <PostButton loadMorePosts={handleLoadMorePosts}/>
+        </div>
+      </>
+      ) : (
+        <h1>Não elementos com esse título.</h1>
+      )} */}
+      <PostsDiv posts={posts}/>
+        <div className="button-container">
+          <PostButton loadMorePosts={handleLoadMorePosts}/>
         </div>
 
-        {posts.length > 0 ? (
-        <>
-          <PostsDiv posts={posts}/>
-          <div className="button-container">
-            <PostButton loadMorePosts={this.loadMorePosts} disabled={noMorePosts}/>
-          </div>
-        </>
-        ) : (
-          <h1>Não elementos com esse título.</h1>
-        )}
-      </section>
-    );
-  }
+    </section>
+  );
 }
-
-export default Home;
